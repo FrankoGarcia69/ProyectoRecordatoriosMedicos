@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/src/pages/AddRecipe/AddRecipeBlock.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/converttime.dart';
@@ -16,7 +18,7 @@ class AddRecipePage extends StatefulWidget {
 class _AddRecipePageState extends State<AddRecipePage> {
   late TextEditingController nameController;
   late TextEditingController doseController;
-
+  late AddRecipeB _addRecipeB;
   late GlobalKey<ScaffoldState> _Scaffoldkey;
 
   @override
@@ -24,6 +26,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
     super.dispose();
     nameController.dispose();
     doseController.dispose();
+    _addRecipeB.dispose();
   }
 
   @override
@@ -31,7 +34,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
     super.initState();
     nameController = TextEditingController();
     doseController = TextEditingController();
-
+    _addRecipeB = AddRecipeB();
     _Scaffoldkey = GlobalKey<ScaffoldState>();
   }
 
@@ -43,115 +46,120 @@ class _AddRecipePageState extends State<AddRecipePage> {
       appBar: AppBar(
         title: const Text('Añadir Nueva Receta'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(2.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const PanelTitle(
-              title: 'Nombre de Medicina',
-              isRequired: true,
-            ),
-            TextFormField(
-              controller: nameController,
-              textCapitalization: TextCapitalization.words,
-              maxLength: 13,
-              decoration: const InputDecoration(border: UnderlineInputBorder()),
-              style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                    color: cOtherColor,
-                  ),
-            ),
-            const PanelTitle(
-              title: 'Dosis en mg',
-              isRequired: false,
-            ),
-            TextFormField(
-              controller: doseController,
-              keyboardType: TextInputType.number,
-              maxLength: 13,
-              decoration: const InputDecoration(border: UnderlineInputBorder()),
-              style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                    color: cOtherColor,
-                  ),
-            ),
-            SizedBox(
-              height: 2.h,
-            ),
-            const PanelTitle(
-              title: 'Tipo de Medicina',
-              isRequired: false,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 2.h),
-              child: StreamBuilder(
-                builder: (context, snapshot) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      RecipeTypeColumn(
-                          name: 'Capsulas',
-                          iconValue: 'assets/icons/pill.svg',
-                          isSelected:
-                              snapshot.data == RecipeType.pill ? true : false,
-                          recipeType: RecipeType.pill),
-                      RecipeTypeColumn(
-                          name: 'Jeringa',
-                          iconValue: 'assets/icons/syringe.svg',
-                          isSelected: snapshot.data == RecipeType.syringe
-                              ? true
-                              : false,
-                          recipeType: RecipeType.syringe),
-                      RecipeTypeColumn(
-                          name: 'Tabletas',
-                          iconValue: 'assets/icons/pill2.svg',
-                          isSelected: snapshot.data == RecipeType.tablets
-                              ? true
-                              : false,
-                          recipeType: RecipeType.tablets),
-                      RecipeTypeColumn(
-                          name: 'Bote',
-                          iconValue: 'assets/icons/bottle.svg',
-                          isSelected:
-                              snapshot.data == RecipeType.bottle ? true : false,
-                          recipeType: RecipeType.bottle),
-                    ],
-                  );
-                },
+      body: Provider<AddRecipeB>.value(
+        value: _addRecipeB,
+        child: Padding(
+          padding: EdgeInsets.all(2.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const PanelTitle(
+                title: 'Nombre de Medicina',
+                isRequired: true,
               ),
-            ),
-            const PanelTitle(
-              title: 'Intervalo de Dosis',
-              isRequired: true,
-            ),
-            const IntervalSelect(),
-            const PanelTitle(
-              title: 'Tiempo de inicio',
-              isRequired: true,
-            ),
-            const SelectTime(),
-            SizedBox(
-              height: 2.h,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 8.w, right: 8.w),
-              child: SizedBox(
-                width: 80.w,
-                height: 8.h,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: cPrimaryColor,
-                    shape: const StadiumBorder(),
-                  ),
-                    onPressed: () {},
-                    child: Center(
-                      child: Text('Añadir',
-                          style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                                color: cScaffoldColor,
-                              )),
-                    )),
+              TextFormField(
+                controller: nameController,
+                textCapitalization: TextCapitalization.words,
+                maxLength: 15,
+                decoration: const InputDecoration(border: UnderlineInputBorder()),
+                style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                      color: cOtherColor,
+                    ),
               ),
-            ),
-          ],
+              const PanelTitle(
+                title: 'Dosis en mg',
+                isRequired: false,
+              ),
+              TextFormField(
+                controller: doseController,
+                keyboardType: TextInputType.number,
+                maxLength: 5,
+                decoration: const InputDecoration(border: UnderlineInputBorder()),
+                style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                      color: cOtherColor,
+                    ),
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+              const PanelTitle(
+                title: 'Tipo de Medicina',
+                isRequired: false,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 2.h),
+                child: StreamBuilder<RecipeType>(
+                  stream: _addRecipeB.selectRecipeType,
+                  builder: (context, snapshot) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        RecipeTypeColumn(
+                            name: 'Capsulas',
+                            iconValue: 'assets/icons/pill.svg',
+                            isSelected:
+                                snapshot.data == RecipeType.pill ? true : false,
+                            recipeType: RecipeType.pill),
+                        RecipeTypeColumn(
+                            name: 'Jeringa',
+                            iconValue: 'assets/icons/syringe.svg',
+                            isSelected: snapshot.data == RecipeType.syringe
+                                ? true
+                                : false,
+                            recipeType: RecipeType.syringe),
+                        RecipeTypeColumn(
+                            name: 'Tabletas',
+                            iconValue: 'assets/icons/pill2.svg',
+                            isSelected: snapshot.data == RecipeType.tablets
+                                ? true
+                                : false,
+                            recipeType: RecipeType.tablets),
+                        RecipeTypeColumn(
+                            name: 'Bote',
+                            iconValue: 'assets/icons/bottle.svg',
+                            isSelected:
+                                snapshot.data == RecipeType.bottle ? true : false,
+                            recipeType: RecipeType.bottle),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const PanelTitle(
+                title: 'Intervalo de Dosis',
+                isRequired: true,
+              ),
+              const IntervalSelect(),
+              const PanelTitle(
+                title: 'Tiempo de inicio',
+                isRequired: true,
+              ),
+              const SelectTime(),
+              SizedBox(
+                height: 2.h,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 8.w, right: 8.w),
+                child: SizedBox(
+                  width: 80.w,
+                  height: 8.h,
+                  child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: cPrimaryColor,
+                        shape: const StadiumBorder(),
+                      ),
+                      onPressed: () {},
+                      child: Center(
+                        child: Text('Añadir',
+                            style:
+                                Theme.of(context).textTheme.subtitle2!.copyWith(
+                                      color: cScaffoldColor,
+                                    )),
+                      )),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -166,8 +174,22 @@ class SelectTime extends StatefulWidget {
 }
 
 class _SelectTimeState extends State<SelectTime> {
-  final TimeOfDay _time = const TimeOfDay(hour: 0, minute: 00);
-  final bool _clicked = false;
+  TimeOfDay _time = const TimeOfDay(hour: 0, minute: 00);
+  bool _clicked = false;
+
+  Future<TimeOfDay> _selectTime() async {
+    final TimeOfDay? picked =
+        await showTimePicker(context: context, initialTime: _time);
+
+    if (picked != null && picked != _time) {
+      _time = picked;
+      _clicked = true;
+
+      //provider updatetime
+    }
+    return picked!;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -177,7 +199,9 @@ class _SelectTimeState extends State<SelectTime> {
         child: TextButton(
             style: TextButton.styleFrom(
                 backgroundColor: cPrimaryColor, shape: StadiumBorder()),
-            onPressed: () {},
+            onPressed: () {
+              _selectTime();
+            },
             child: Center(
               child: Text(
                   _clicked == false
@@ -264,8 +288,11 @@ class RecipeTypeColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AddRecipeB addRecipeB = Provider.of<AddRecipeB>(context);
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        addRecipeB.updateSelectedRecipe(recipeType);
+      },
       child: Column(
         children: [
           Container(
@@ -273,7 +300,7 @@ class RecipeTypeColumn extends StatelessWidget {
             width: 20.w,
             // height: 10.h,
             decoration: BoxDecoration(
-              color: isSelected ? Colors.white : cOtherColor,
+              color: isSelected ? cOtherColor : Colors.white,
               borderRadius: BorderRadius.circular(3.h),
             ),
             child: Center(
@@ -281,7 +308,7 @@ class RecipeTypeColumn extends StatelessWidget {
                 padding: EdgeInsets.all(1.h),
                 child: SvgPicture.asset(iconValue,
                     height: 7.h,
-                    color: isSelected ? cOtherColor : Colors.white),
+                    color: isSelected ? Colors.white : cOtherColor),
               ),
             ),
           ),
