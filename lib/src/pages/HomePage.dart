@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../constantscolors.dart';
+import 'AddRecipe/AddRecipePage.dart';
+
 class RecetasPage extends StatefulWidget {
   const RecetasPage({super.key});
 
@@ -16,15 +19,43 @@ class _RecetasPageState extends State<RecetasPage> {
       body: Padding(
         padding: EdgeInsets.all(3.h),
         child: Column(
-          children: const [
-            TopContainer(),
+          children: [
+            const TopContainer(),
+            SizedBox(
+              height: 2.h,
+            ),
+            const Flexible(child: BottomContainer()),
           ],
+        ),
+      ),
+      floatingActionButton: InkResponse(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddRecipePage()),
+          );
+        },
+        child: SizedBox(
+          width: 18.w,
+          height: 9.h,
+          child: Card(
+            color: cPrimaryColor,
+            shape: BeveledRectangleBorder(
+              borderRadius: BorderRadius.circular(4.h),
+            ),
+            child: Icon(
+              Icons.add,
+              color: cScaffoldColor,
+              size: 50.sp,
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
+//Contenedores principales
 class TopContainer extends StatelessWidget {
   const TopContainer({super.key});
 
@@ -68,6 +99,19 @@ class TopContainer extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class BottomContainer extends StatelessWidget {
+  const BottomContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('No se ha agregado ninguna receta',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headline3),
     );
   }
 }

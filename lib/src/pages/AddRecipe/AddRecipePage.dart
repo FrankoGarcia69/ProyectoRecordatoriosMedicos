@@ -1,0 +1,338 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:sizer/sizer.dart';
+
+import '../../../common/converttime.dart';
+import '../../../constantscolors.dart';
+import '../../../models/recipetype.dart';
+
+class AddRecipePage extends StatefulWidget {
+  const AddRecipePage({super.key});
+
+  @override
+  State<AddRecipePage> createState() => _AddRecipePageState();
+}
+
+class _AddRecipePageState extends State<AddRecipePage> {
+  late TextEditingController nameController;
+  late TextEditingController doseController;
+
+  late GlobalKey<ScaffoldState> _Scaffoldkey;
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    doseController.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    doseController = TextEditingController();
+
+    _Scaffoldkey = GlobalKey<ScaffoldState>();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _Scaffoldkey,
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: const Text('Añadir Nueva Receta'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(2.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const PanelTitle(
+              title: 'Nombre de Medicina',
+              isRequired: true,
+            ),
+            TextFormField(
+              controller: nameController,
+              textCapitalization: TextCapitalization.words,
+              maxLength: 13,
+              decoration: const InputDecoration(border: UnderlineInputBorder()),
+              style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                    color: cOtherColor,
+                  ),
+            ),
+            const PanelTitle(
+              title: 'Dosis en mg',
+              isRequired: false,
+            ),
+            TextFormField(
+              controller: doseController,
+              keyboardType: TextInputType.number,
+              maxLength: 13,
+              decoration: const InputDecoration(border: UnderlineInputBorder()),
+              style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                    color: cOtherColor,
+                  ),
+            ),
+            SizedBox(
+              height: 2.h,
+            ),
+            const PanelTitle(
+              title: 'Tipo de Medicina',
+              isRequired: false,
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 2.h),
+              child: StreamBuilder(
+                builder: (context, snapshot) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RecipeTypeColumn(
+                          name: 'Capsulas',
+                          iconValue: 'assets/icons/pill.svg',
+                          isSelected:
+                              snapshot.data == RecipeType.pill ? true : false,
+                          recipeType: RecipeType.pill),
+                      RecipeTypeColumn(
+                          name: 'Jeringa',
+                          iconValue: 'assets/icons/syringe.svg',
+                          isSelected: snapshot.data == RecipeType.syringe
+                              ? true
+                              : false,
+                          recipeType: RecipeType.syringe),
+                      RecipeTypeColumn(
+                          name: 'Tabletas',
+                          iconValue: 'assets/icons/pill2.svg',
+                          isSelected: snapshot.data == RecipeType.tablets
+                              ? true
+                              : false,
+                          recipeType: RecipeType.tablets),
+                      RecipeTypeColumn(
+                          name: 'Bote',
+                          iconValue: 'assets/icons/bottle.svg',
+                          isSelected:
+                              snapshot.data == RecipeType.bottle ? true : false,
+                          recipeType: RecipeType.bottle),
+                    ],
+                  );
+                },
+              ),
+            ),
+            const PanelTitle(
+              title: 'Intervalo de Dosis',
+              isRequired: true,
+            ),
+            const IntervalSelect(),
+            const PanelTitle(
+              title: 'Tiempo de inicio',
+              isRequired: true,
+            ),
+            const SelectTime(),
+            SizedBox(
+              height: 2.h,
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 8.w, right: 8.w),
+              child: SizedBox(
+                width: 80.w,
+                height: 8.h,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: cPrimaryColor,
+                    shape: const StadiumBorder(),
+                  ),
+                    onPressed: () {},
+                    child: Center(
+                      child: Text('Añadir',
+                          style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                                color: cScaffoldColor,
+                              )),
+                    )),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SelectTime extends StatefulWidget {
+  const SelectTime({super.key});
+
+  @override
+  State<SelectTime> createState() => _SelectTimeState();
+}
+
+class _SelectTimeState extends State<SelectTime> {
+  final TimeOfDay _time = const TimeOfDay(hour: 0, minute: 00);
+  final bool _clicked = false;
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 8.h,
+      child: Padding(
+        padding: EdgeInsets.only(top: 2.h),
+        child: TextButton(
+            style: TextButton.styleFrom(
+                backgroundColor: cPrimaryColor, shape: StadiumBorder()),
+            onPressed: () {},
+            child: Center(
+              child: Text(
+                  _clicked == false
+                      ? 'Seleccionar Tiempo'
+                      : '${convertTime(_time.minute.toString())}:${convertTime(_time.minute.toString())}',
+                  style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                        color: cScaffoldColor,
+                      )),
+            )),
+      ),
+    );
+  }
+}
+
+class IntervalSelect extends StatefulWidget {
+  const IntervalSelect({super.key});
+
+  @override
+  State<IntervalSelect> createState() => _IntervalSelectState();
+}
+
+class _IntervalSelectState extends State<IntervalSelect> {
+  final _intervals = [6, 8, 12, 24];
+  var _selected = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 1.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Recordar cada ',
+            style: Theme.of(context).textTheme.subtitle2,
+          ),
+          DropdownButton(
+            iconEnabledColor: cOtherColor,
+            dropdownColor: cScaffoldColor,
+            itemHeight: 8.h,
+            hint: _selected == 0
+                ? Text('Seleccione un Intervalo',
+                    style: Theme.of(context).textTheme.caption)
+                : null,
+            elevation: 3,
+            value: _selected == 0 ? null : _selected,
+            items: _intervals.map((int e) {
+              return DropdownMenuItem<int>(
+                value: e,
+                child: Text(
+                  e.toString(),
+                  style: Theme.of(context).textTheme.caption!.copyWith(
+                        color: cSecondaryColor,
+                      ),
+                ),
+              );
+            }).toList(),
+            onChanged: (newVal) {
+              setState(() {
+                _selected = newVal!;
+              });
+            },
+          ),
+          Text(
+            _selected == 1 ? 'hora.' : 'horas.',
+            style: Theme.of(context).textTheme.subtitle2,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class RecipeTypeColumn extends StatelessWidget {
+  const RecipeTypeColumn(
+      {super.key,
+      required this.name,
+      required this.iconValue,
+      required this.isSelected,
+      required this.recipeType});
+  final RecipeType recipeType;
+  final String name;
+  final String iconValue;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Column(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 20.w,
+            // height: 10.h,
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.white : cOtherColor,
+              borderRadius: BorderRadius.circular(3.h),
+            ),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(1.h),
+                child: SvgPicture.asset(iconValue,
+                    height: 7.h,
+                    color: isSelected ? cOtherColor : Colors.white),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 1.h),
+            child: Container(
+              height: 10.w,
+              width: 10.h,
+              decoration: BoxDecoration(
+                color: isSelected ? cOtherColor : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Center(
+                    child: Text(
+                  name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .subtitle2!
+                      .copyWith(color: isSelected ? Colors.white : cOtherColor),
+                )),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PanelTitle extends StatelessWidget {
+  const PanelTitle({super.key, required this.title, required this.isRequired});
+  final String title;
+  final bool isRequired;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 2.h),
+      child: Text.rich(TextSpan(children: <TextSpan>[
+        TextSpan(
+          text: title,
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
+        TextSpan(
+          text: isRequired ? ' *' : '',
+          style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                color: cPrimaryColor,
+              ),
+        )
+      ])),
+    );
+  }
+}
