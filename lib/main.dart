@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/pages/AddRecipe/AddRecipeBlock.dart';
-import 'package:flutter_application_1/src/pages/HomePage.dart';
+import 'package:flutter_application_1/src/pages/add_recipe/add_recipe_b.dart';
+import 'package:flutter_application_1/src/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'constantscolors.dart';
+import 'global_bloc.dart';
 
 void main() => runApp(const MyApp());
 
@@ -16,18 +17,18 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  AddRecipeB? addRecipeB;
+  GlobalB? globalB;
 
   @override
   void initState() {
-    addRecipeB = AddRecipeB();
+    globalB = GlobalB();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Provider<AddRecipeB>.value(
-        value: addRecipeB!,
+    return Provider<GlobalB>.value(
+        value: globalB!,
         child: Sizer(builder: (context, orientation, deviceType) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
@@ -58,11 +59,17 @@ class _MyAppState extends State<MyApp> {
                       fontSize: 24.sp,
                       fontWeight: FontWeight.w800,
                       color: cTextColor),
+                  headline5: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w900,
+                      color: cTextColor),
                   headline6: GoogleFonts.poppins(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 1.0,
                       color: cSecondaryColor),
+                  subtitle1:
+                      GoogleFonts.poppins(fontSize: 14.sp, color: cPrimaryColor),
                   subtitle2:
                       GoogleFonts.poppins(fontSize: 12.sp, color: cTextColor),
                   labelMedium: TextStyle(

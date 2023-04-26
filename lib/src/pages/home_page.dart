@@ -3,7 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../constantscolors.dart';
-import 'AddRecipe/AddRecipePage.dart';
+import 'add_recipe/add_recipe_page.dart';
+import 'resume_recipe/resume_recipe_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -137,6 +138,7 @@ class RecipeCard extends StatelessWidget {
           splashColor: Color.fromARGB(137, 161, 157, 157),
           onTap: () {
             //animacion despues
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ResumeRecipePage()));
           },
           child: Container(
             padding:

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/pages/AddRecipe/AddRecipeBlock.dart';
+import 'package:flutter_application_1/src/pages/add_recipe/add_recipe_b.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/converttime.dart';
 import '../../../constantscolors.dart';
+import '../../../global_bloc.dart';
 import '../../../models/recipetype.dart';
 
 class AddRecipePage extends StatefulWidget {
@@ -40,6 +41,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalB globalB = Provider.of<GlobalB>(context);
     return Scaffold(
       key: _Scaffoldkey,
       resizeToAvoidBottomInset: false,
@@ -61,7 +63,8 @@ class _AddRecipePageState extends State<AddRecipePage> {
                 controller: nameController,
                 textCapitalization: TextCapitalization.words,
                 maxLength: 15,
-                decoration: const InputDecoration(border: UnderlineInputBorder()),
+                decoration:
+                    const InputDecoration(border: UnderlineInputBorder()),
                 style: Theme.of(context).textTheme.subtitle2!.copyWith(
                       color: cOtherColor,
                     ),
@@ -74,7 +77,8 @@ class _AddRecipePageState extends State<AddRecipePage> {
                 controller: doseController,
                 keyboardType: TextInputType.number,
                 maxLength: 5,
-                decoration: const InputDecoration(border: UnderlineInputBorder()),
+                decoration:
+                    const InputDecoration(border: UnderlineInputBorder()),
                 style: Theme.of(context).textTheme.subtitle2!.copyWith(
                       color: cOtherColor,
                     ),
@@ -117,8 +121,9 @@ class _AddRecipePageState extends State<AddRecipePage> {
                         RecipeTypeColumn(
                             name: 'Bote',
                             iconValue: 'assets/icons/bottle.svg',
-                            isSelected:
-                                snapshot.data == RecipeType.bottle ? true : false,
+                            isSelected: snapshot.data == RecipeType.bottle
+                                ? true
+                                : false,
                             recipeType: RecipeType.bottle),
                       ],
                     );
@@ -182,9 +187,11 @@ class _SelectTimeState extends State<SelectTime> {
         await showTimePicker(context: context, initialTime: _time);
 
     if (picked != null && picked != _time) {
-      _time = picked;
+      setState(() {
+        _time = picked;
       _clicked = true;
 
+      });
       //provider updatetime
     }
     return picked!;
@@ -206,7 +213,7 @@ class _SelectTimeState extends State<SelectTime> {
               child: Text(
                   _clicked == false
                       ? 'Seleccionar Tiempo'
-                      : '${convertTime(_time.minute.toString())}:${convertTime(_time.minute.toString())}',
+                      : '${convertTime(_time.hour.toString())}:${convertTime(_time.minute.toString())}',
                   style: Theme.of(context).textTheme.subtitle2!.copyWith(
                         color: cScaffoldColor,
                       )),
@@ -243,7 +250,10 @@ class _IntervalSelectState extends State<IntervalSelect> {
             itemHeight: 8.h,
             hint: _selected == 0
                 ? Text('Seleccione un Intervalo',
-                    style: Theme.of(context).textTheme.caption)
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: cSecondaryColor))
                 : null,
             elevation: 3,
             value: _selected == 0 ? null : _selected,
