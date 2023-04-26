@@ -5,14 +5,14 @@ import 'package:sizer/sizer.dart';
 import '../../constantscolors.dart';
 import 'AddRecipe/AddRecipePage.dart';
 
-class RecetasPage extends StatefulWidget {
-  const RecetasPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<RecetasPage> createState() => _RecetasPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _RecetasPageState extends State<RecetasPage> {
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

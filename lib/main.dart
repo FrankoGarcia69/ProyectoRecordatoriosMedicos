@@ -103,7 +103,7 @@ class _MyAppState extends State<MyApp> {
                   entryModeIconColor: cOtherColor,
                 ),
               ),
-              home: const RecetasPage());
+              home: const HomePage());
         }));
   }
 }
