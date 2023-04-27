@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/errors.dart';
 import 'package:flutter_application_1/src/pages/add_recipe/add_recipe_b.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +10,8 @@ import 'package:sizer/sizer.dart';
 import '../../../common/converttime.dart';
 import '../../../constantscolors.dart';
 import '../../../global_bloc.dart';
+
+import '../../../models/recipe.dart';
 import '../../../models/recipetype.dart';
 
 class AddRecipePage extends StatefulWidget {
@@ -147,20 +152,81 @@ class _AddRecipePageState extends State<AddRecipePage> {
                 padding: EdgeInsets.only(left: 8.w, right: 8.w),
                 child: SizedBox(
                   width: 80.w,
-                  height: 8.h,
+                  height: 6.h,
                   child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: cPrimaryColor,
-                        shape: const StadiumBorder(),
-                      ),
-                      onPressed: () {},
-                      child: Center(
-                        child: Text('Añadir',
-                            style:
-                                Theme.of(context).textTheme.subtitle2!.copyWith(
-                                      color: cScaffoldColor,
-                                    )),
-                      )),
+                    style: TextButton.styleFrom(
+                      backgroundColor: cPrimaryColor,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: Center(
+                      child: Text('Añadir',
+                          style:
+                              Theme.of(context).textTheme.subtitle2!.copyWith(
+                                    color: cScaffoldColor,
+                                  )),
+                    ),
+                    onPressed: () {
+                      String? recipeName;
+                      int? dose;
+
+                      if (nameController.text == "") {
+                        _addRecipeB.submitError(AddError.nameNull);
+                        return;
+                      }
+
+                      if (nameController.text != "") {
+                        recipeName = nameController.text;
+                      }
+
+                      if (doseController.text == "") {
+                        dose = 0;
+                      }
+
+                      if (doseController.text != "") {
+                        dose = int.parse(doseController.text);
+                      }
+
+                      for (var recipe in globalB.recipeList$!.value) {
+                        if (recipeName == recipe.recipename) {
+                          _addRecipeB.submitError(AddError.nameDuplicate);
+                          return;
+                        }
+                      }
+
+                      if (_addRecipeB.selectedIntervals!.value == 0) {
+                        _addRecipeB.submitError(AddError.interval);
+                        return;
+                      }
+
+                      if (_addRecipeB.selectedTimeDay$!.value == 'None') {
+                        _addRecipeB.submitError(AddError.startime);
+                        return;
+                      }
+
+                      String recipeType = _addRecipeB.selectRecipeType!.value
+                          .toString()
+                          .substring(13);
+
+                      int interval = _addRecipeB.selectedIntervals!.value;
+                      String startTime = _addRecipeB.selectedTimeDay$!.value;
+
+                      List<int> intids =
+                          makeids(24 / _addRecipeB.selectedIntervals!.value);
+
+                      List<String> notificationids =
+                          intids.map((i) => i.toString()).toList();
+
+                      Recipe addRecipe = Recipe(
+                          notificationid: notificationids,
+                          recipename: recipeName,
+                          dose: dose,
+                          recipetype: recipeType,
+                          interval: interval,
+                          starttime: startTime);
+
+                      globalB.updateRecipeList(addRecipe);
+                    },
+                  ),
                 ),
               ),
             ],
@@ -168,6 +234,17 @@ class _AddRecipePageState extends State<AddRecipePage> {
         ),
       ),
     );
+  }
+
+  List<int> makeids(double n) {
+    var rng = Random();
+
+    List<int> ids = [];
+    for (int i = 0; i < n; i++) {
+      ids.add(rng.nextInt(1000000000));
+    }
+
+    return ids;
   }
 }
 
@@ -189,8 +266,7 @@ class _SelectTimeState extends State<SelectTime> {
     if (picked != null && picked != _time) {
       setState(() {
         _time = picked;
-      _clicked = true;
-
+        _clicked = true;
       });
       //provider updatetime
     }

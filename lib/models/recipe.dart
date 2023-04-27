@@ -1,7 +1,7 @@
 class Recipe {
   final List<dynamic>? notificationid;
   final String? recipename;
-  final String? dose;
+  final int? dose;
   final String? recipetype;
   final int? interval;
   final String? starttime;
@@ -17,7 +17,7 @@ class Recipe {
   //getters
   List<dynamic> get getid => notificationid!;
   String get getrecipename => recipename!;
-  String get getdose => dose!;
+  int get getdose => dose!;
   String get getrecipetype => recipetype!;
   int get getinterval => interval!;
   String get getstarttime => starttime!;
@@ -40,7 +40,6 @@ class Recipe {
         dose: paredJson['dose'],
         recipetype: paredJson['type'],
         interval: paredJson['interval'],
-        starttime: paredJson['starttime']
-    );
+        starttime: paredJson['starttime']);
   }
 }
