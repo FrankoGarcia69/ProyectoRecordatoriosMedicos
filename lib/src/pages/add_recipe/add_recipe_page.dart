@@ -13,6 +13,7 @@ import '../../../global_bloc.dart';
 
 import '../../../models/recipe.dart';
 import '../../../models/recipetype.dart';
+import '../success_screen/success_screen.dart';
 
 class AddRecipePage extends StatefulWidget {
   const AddRecipePage({super.key});
@@ -42,6 +43,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
     doseController = TextEditingController();
     _addRecipeB = AddRecipeB();
     _Scaffoldkey = GlobalKey<ScaffoldState>();
+    initializeErrorListen();
   }
 
   @override
@@ -57,183 +59,226 @@ class _AddRecipePageState extends State<AddRecipePage> {
         value: _addRecipeB,
         child: Padding(
           padding: EdgeInsets.all(2.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const PanelTitle(
-                title: 'Nombre de Medicina',
-                isRequired: true,
-              ),
-              TextFormField(
-                controller: nameController,
-                textCapitalization: TextCapitalization.words,
-                maxLength: 15,
-                decoration:
-                    const InputDecoration(border: UnderlineInputBorder()),
-                style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                      color: cOtherColor,
-                    ),
-              ),
-              const PanelTitle(
-                title: 'Dosis en mg',
-                isRequired: false,
-              ),
-              TextFormField(
-                controller: doseController,
-                keyboardType: TextInputType.number,
-                maxLength: 5,
-                decoration:
-                    const InputDecoration(border: UnderlineInputBorder()),
-                style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                      color: cOtherColor,
-                    ),
-              ),
-              SizedBox(
-                height: 2.h,
-              ),
-              const PanelTitle(
-                title: 'Tipo de Medicina',
-                isRequired: false,
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 2.h),
-                child: StreamBuilder<RecipeType>(
-                  stream: _addRecipeB.selectRecipeType,
-                  builder: (context, snapshot) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        RecipeTypeColumn(
-                            name: 'Capsulas',
-                            iconValue: 'assets/icons/pill.svg',
-                            isSelected:
-                                snapshot.data == RecipeType.pill ? true : false,
-                            recipeType: RecipeType.pill),
-                        RecipeTypeColumn(
-                            name: 'Jeringa',
-                            iconValue: 'assets/icons/syringe.svg',
-                            isSelected: snapshot.data == RecipeType.syringe
-                                ? true
-                                : false,
-                            recipeType: RecipeType.syringe),
-                        RecipeTypeColumn(
-                            name: 'Tabletas',
-                            iconValue: 'assets/icons/pill2.svg',
-                            isSelected: snapshot.data == RecipeType.tablets
-                                ? true
-                                : false,
-                            recipeType: RecipeType.tablets),
-                        RecipeTypeColumn(
-                            name: 'Bote',
-                            iconValue: 'assets/icons/bottle.svg',
-                            isSelected: snapshot.data == RecipeType.bottle
-                                ? true
-                                : false,
-                            recipeType: RecipeType.bottle),
-                      ],
-                    );
-                  },
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const PanelTitle(
+                  title: 'Nombre de Medicina',
+                  isRequired: true,
                 ),
-              ),
-              const PanelTitle(
-                title: 'Intervalo de Dosis',
-                isRequired: true,
-              ),
-              const IntervalSelect(),
-              const PanelTitle(
-                title: 'Tiempo de inicio',
-                isRequired: true,
-              ),
-              const SelectTime(),
-              SizedBox(
-                height: 2.h,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.w, right: 8.w),
-                child: SizedBox(
-                  width: 80.w,
-                  height: 6.h,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: cPrimaryColor,
-                      shape: const StadiumBorder(),
-                    ),
-                    child: Center(
-                      child: Text('Añadir',
-                          style:
-                              Theme.of(context).textTheme.subtitle2!.copyWith(
-                                    color: cScaffoldColor,
-                                  )),
-                    ),
-                    onPressed: () {
-                      String? recipeName;
-                      int? dose;
-
-                      if (nameController.text == "") {
-                        _addRecipeB.submitError(AddError.nameNull);
-                        return;
-                      }
-
-                      if (nameController.text != "") {
-                        recipeName = nameController.text;
-                      }
-
-                      if (doseController.text == "") {
-                        dose = 0;
-                      }
-
-                      if (doseController.text != "") {
-                        dose = int.parse(doseController.text);
-                      }
-
-                      for (var recipe in globalB.recipeList$!.value) {
-                        if (recipeName == recipe.recipename) {
-                          _addRecipeB.submitError(AddError.nameDuplicate);
-                          return;
-                        }
-                      }
-
-                      if (_addRecipeB.selectedIntervals!.value == 0) {
-                        _addRecipeB.submitError(AddError.interval);
-                        return;
-                      }
-
-                      if (_addRecipeB.selectedTimeDay$!.value == 'None') {
-                        _addRecipeB.submitError(AddError.startime);
-                        return;
-                      }
-
-                      String recipeType = _addRecipeB.selectRecipeType!.value
-                          .toString()
-                          .substring(13);
-
-                      int interval = _addRecipeB.selectedIntervals!.value;
-                      String startTime = _addRecipeB.selectedTimeDay$!.value;
-
-                      List<int> intids =
-                          makeids(24 / _addRecipeB.selectedIntervals!.value);
-
-                      List<String> notificationids =
-                          intids.map((i) => i.toString()).toList();
-
-                      Recipe addRecipe = Recipe(
-                          notificationid: notificationids,
-                          recipename: recipeName,
-                          dose: dose,
-                          recipetype: recipeType,
-                          interval: interval,
-                          starttime: startTime);
-
-                      globalB.updateRecipeList(addRecipe);
+                TextFormField(
+                  controller: nameController,
+                  textCapitalization: TextCapitalization.words,
+                  maxLength: 15,
+                  decoration:
+                      const InputDecoration(border: UnderlineInputBorder()),
+                  style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                        color: cOtherColor,
+                      ),
+                ),
+                const PanelTitle(
+                  title: 'Dosis en mg',
+                  isRequired: false,
+                ),
+                TextFormField(
+                  controller: doseController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 5,
+                  decoration:
+                      const InputDecoration(border: UnderlineInputBorder()),
+                  style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                        color: cOtherColor,
+                      ),
+                ),
+                SizedBox(
+                  height: 2.h,
+                ),
+                const PanelTitle(
+                  title: 'Tipo de Medicina',
+                  isRequired: false,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 2.h),
+                  child: StreamBuilder<RecipeType>(
+                    stream: _addRecipeB.selectRecipeType,
+                    builder: (context, snapshot) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RecipeTypeColumn(
+                              name: 'Capsulas',
+                              iconValue: 'assets/icons/pill.svg',
+                              isSelected: snapshot.data == RecipeType.pill
+                                  ? true
+                                  : false,
+                              recipeType: RecipeType.pill),
+                          RecipeTypeColumn(
+                              name: 'Jeringa',
+                              iconValue: 'assets/icons/syringe.svg',
+                              isSelected: snapshot.data == RecipeType.syringe
+                                  ? true
+                                  : false,
+                              recipeType: RecipeType.syringe),
+                          RecipeTypeColumn(
+                              name: 'Tabletas',
+                              iconValue: 'assets/icons/pill2.svg',
+                              isSelected: snapshot.data == RecipeType.tablets
+                                  ? true
+                                  : false,
+                              recipeType: RecipeType.tablets),
+                          RecipeTypeColumn(
+                              name: 'Bote',
+                              iconValue: 'assets/icons/bottle.svg',
+                              isSelected: snapshot.data == RecipeType.bottle
+                                  ? true
+                                  : false,
+                              recipeType: RecipeType.bottle),
+                        ],
+                      );
                     },
                   ),
                 ),
-              ),
-            ],
+                const PanelTitle(
+                  title: 'Intervalo de Dosis',
+                  isRequired: true,
+                ),
+                const IntervalSelect(),
+                const PanelTitle(
+                  title: 'Tiempo de inicio',
+                  isRequired: true,
+                ),
+                const SelectTime(),
+                SizedBox(
+                  height: 2.h,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 8.w, right: 8.w),
+                  child: SizedBox(
+                    width: 80.w,
+                    height: 8.h,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: cPrimaryColor,
+                        shape: const StadiumBorder(),
+                      ),
+                      child: Center(
+                        child: Text('Añadir',
+                            style:
+                                Theme.of(context).textTheme.subtitle2!.copyWith(
+                                      color: cScaffoldColor,
+                                    )),
+                      ),
+                      onPressed: () {
+                        String? recipeName;
+                        int? dose;
+
+                        if (nameController.text == "") {
+                          _addRecipeB.submitError(AddError.nameNull);
+                          return;
+                        }
+
+                        if (nameController.text != "") {
+                          recipeName = nameController.text;
+                        }
+
+                        if (doseController.text == "") {
+                          dose = 0;
+                        }
+
+                        if (doseController.text != "") {
+                          dose = int.parse(doseController.text);
+                        }
+
+                        for (var recipe in globalB.recipeList$!.value) {
+                          if (recipeName == recipe.recipename) {
+                            _addRecipeB.submitError(AddError.nameDuplicate);
+                            return;
+                          }
+                        }
+
+                        if (_addRecipeB.selectedIntervals!.value == 0) {
+                          _addRecipeB.submitError(AddError.interval);
+                          return;
+                        }
+
+                        if (_addRecipeB.selectedTimeDay$!.value == 'None') {
+                          _addRecipeB.submitError(AddError.startime);
+                          return;
+                        }
+
+                        String recipeType = _addRecipeB.selectRecipeType!.value
+                            .toString()
+                            .substring(13);
+
+                        int interval = _addRecipeB.selectedIntervals!.value;
+                        String startTime = _addRecipeB.selectedTimeDay$!.value;
+
+                        List<int> intids =
+                            makeids(24 / _addRecipeB.selectedIntervals!.value);
+
+                        List<String> notificationids =
+                            intids.map((i) => i.toString()).toList();
+
+                        Recipe addRecipe = Recipe(
+                            notificationid: notificationids,
+                            recipename: recipeName,
+                            dose: dose,
+                            recipetype: recipeType,
+                            interval: interval,
+                            starttime: startTime);
+
+                        globalB.updateRecipeList(addRecipe);
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: ((context) => SuccessScreen())));
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void initializeErrorListen() {
+    _addRecipeB.errorState$!.listen((AddError error) {
+      switch (error) {
+        case AddError.nameNull:
+          displayError("Porfavor ingrese el nombre del medicamento");
+          break;
+
+        case AddError.nameDuplicate:
+          displayError("El nombre del medicamento ya existe");
+          break;
+
+        case AddError.dose:
+          displayError("Porfavor ingrese la dosis requerida");
+          break;
+        case AddError.interval:
+          displayError("Porfavor ingrese el intervalo");
+          break;
+
+        case AddError.startime:
+          displayError("Porfavor ingrese el tiempo de inicio");
+          break;
+
+        default:
+      }
+    });
+  }
+
+  void displayError(String error) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: cOtherColor,
+      content: Text(error),
+      duration: const Duration(milliseconds: 2000),
+    ));
   }
 
   List<int> makeids(double n) {
@@ -311,6 +356,7 @@ class _IntervalSelectState extends State<IntervalSelect> {
   var _selected = 0;
   @override
   Widget build(BuildContext context) {
+    final AddRecipeB addRecipeB = Provider.of<AddRecipeB>(context);
     return Padding(
       padding: EdgeInsets.only(top: 1.h),
       child: Row(
@@ -347,6 +393,7 @@ class _IntervalSelectState extends State<IntervalSelect> {
             onChanged: (newVal) {
               setState(() {
                 _selected = newVal!;
+                addRecipeB.updateInterval(newVal);
               });
             },
           ),
