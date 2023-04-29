@@ -1,7 +1,7 @@
 enum RecipeType {
-  bottle,
-  pill,
-  syringe,
-  tablets,
-  none
+  Bote,
+  Capsulas,
+  Jeringa,
+  Tabletas,
+  None
 }

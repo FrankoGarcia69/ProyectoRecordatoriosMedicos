@@ -109,31 +109,31 @@ class _AddRecipePageState extends State<AddRecipePage> {
                           RecipeTypeColumn(
                               name: 'Capsulas',
                               iconValue: 'assets/icons/pill.svg',
-                              isSelected: snapshot.data == RecipeType.pill
+                              isSelected: snapshot.data == RecipeType.Capsulas
                                   ? true
                                   : false,
-                              recipeType: RecipeType.pill),
+                              recipeType: RecipeType.Capsulas),
                           RecipeTypeColumn(
                               name: 'Jeringa',
                               iconValue: 'assets/icons/syringe.svg',
-                              isSelected: snapshot.data == RecipeType.syringe
+                              isSelected: snapshot.data == RecipeType.Jeringa
                                   ? true
                                   : false,
-                              recipeType: RecipeType.syringe),
+                              recipeType: RecipeType.Jeringa),
                           RecipeTypeColumn(
                               name: 'Tabletas',
                               iconValue: 'assets/icons/pill2.svg',
-                              isSelected: snapshot.data == RecipeType.tablets
+                              isSelected: snapshot.data == RecipeType.Tabletas
                                   ? true
                                   : false,
-                              recipeType: RecipeType.tablets),
+                              recipeType: RecipeType.Tabletas),
                           RecipeTypeColumn(
                               name: 'Bote',
                               iconValue: 'assets/icons/bottle.svg',
-                              isSelected: snapshot.data == RecipeType.bottle
+                              isSelected: snapshot.data == RecipeType.Bote
                                   ? true
                                   : false,
-                              recipeType: RecipeType.bottle),
+                              recipeType: RecipeType.Bote),
                         ],
                       );
                     },
@@ -207,9 +207,9 @@ class _AddRecipePageState extends State<AddRecipePage> {
                           return;
                         }
 
-                        String recipeType = _addRecipeB.selectRecipeType!.value
+                        String recipeType = _addRecipeB.selectRecipeType.value
                             .toString()
-                            .substring(13);
+                            .substring(11);
 
                         int interval = _addRecipeB.selectedIntervals!.value;
                         String startTime = _addRecipeB.selectedTimeDay$!.value;

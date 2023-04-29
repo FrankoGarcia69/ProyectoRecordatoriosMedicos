@@ -3,9 +3,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../constantscolors.dart';
+import '../../../models/recipe.dart';
 
 class ResumeRecipePage extends StatefulWidget {
-  const ResumeRecipePage({super.key});
+  const ResumeRecipePage(this.recipe, {super.key});
+  final Recipe recipe;
 
   @override
   State<ResumeRecipePage> createState() => _ResumeRecipePageState();
@@ -22,8 +24,8 @@ class _ResumeRecipePageState extends State<ResumeRecipePage> {
         padding: EdgeInsets.all(2.h),
         child: Column(
           children: [
-            MainSection(),
-            DetailedSection(),
+            MainSection(recipe: widget.recipe),
+            DetailedSection(recipe: widget.recipe),
             Spacer(),
             SizedBox(
               width: 100.w,
@@ -60,12 +62,9 @@ class _ResumeRecipePageState extends State<ResumeRecipePage> {
         builder: (context) {
           return AlertDialog(
             backgroundColor: cScaffoldColor,
-            title: Text(
-                '¿Eliminar este recordatorio?',
+            title: Text('¿Eliminar este recordatorio?',
                 textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .subtitle1),
+                style: Theme.of(context).textTheme.subtitle1),
             contentPadding: EdgeInsets.only(top: 1.h),
             actions: [
               TextButton(
@@ -73,7 +72,7 @@ class _ResumeRecipePageState extends State<ResumeRecipePage> {
                   Navigator.of(context).pop();
                 },
                 child: Text(
-                  'Cancelar', 
+                  'Cancelar',
                   style: Theme.of(context).textTheme.caption,
                 ),
               ),
@@ -160,25 +159,76 @@ class DetailedInfo extends StatelessWidget {
 }
 
 class MainSection extends StatelessWidget {
-  const MainSection({super.key});
+  const MainSection({super.key, this.recipe});
+  final Recipe? recipe;
+
+  Hero makeIcon(double size) {
+    if (recipe!.recipetype == 'Bote') {
+      return Hero(
+        tag: recipe!.recipename! + recipe!.recipetype!,
+        child: SvgPicture.asset(
+          'assets/icons/bottle.svg',
+          height: 7.h,
+          color: cPrimaryColor,
+        ),
+      );
+    } else if (recipe!.recipetype == 'Capsulas') {
+      return Hero(
+        tag: recipe!.recipename! + recipe!.recipetype!,
+        child: SvgPicture.asset(
+          'assets/icons/pill.svg',
+          height: 7.h,
+          color: cPrimaryColor,
+        ),
+      );
+    } else if (recipe!.recipetype == 'Jeringa') {
+      return Hero(
+        tag: recipe!.recipename! + recipe!.recipetype!,
+        child: SvgPicture.asset(
+          'assets/icons/syringe.svg',
+          height: 7.h,
+          color: cPrimaryColor,
+        ),
+      );
+    } else if (recipe!.recipetype == 'Tabletas') {
+      return Hero(
+        tag: recipe!.recipename! + recipe!.recipetype!,
+        child: SvgPicture.asset(
+          'assets/icons/pill2.svg',
+          height: 7.h,
+          color: cPrimaryColor,
+        ),
+      );
+    }
+    //en caso de no haber recipetype
+    return Hero(
+      tag: recipe!.recipename! + recipe!.recipetype!,
+      child: Icon(Icons.error, size: size, color: cSecondaryColor),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        SvgPicture.asset(
-          'assets/icons/bottle.svg',
-          height: 7.h,
-          color: cPrimaryColor,
-        ),
+        makeIcon(7.h),
         SizedBox(
           width: 2.w,
         ),
         Column(
-          children: const [
-            MainInfo(titlefield: 'Nombre de Medicamento', infofield: 'B12'),
-            MainInfo(titlefield: 'Dosis', infofield: '500 mg'),
+          children: [
+            Hero(
+                tag: recipe!.recipename!,
+                child: Material(
+                    color: Colors.transparent,
+                    child: MainInfo(
+                        titlefield: recipe!.recipename!, infofield: 'B12'))),
+            MainInfo(
+                titlefield: 'Dosis',
+                infofield: recipe!.dose == 0
+                    ? 'No especificado'
+                    : '${recipe!.dose} mg'),
           ],
         ),
       ],
@@ -187,17 +237,26 @@ class MainSection extends StatelessWidget {
 }
 
 class DetailedSection extends StatelessWidget {
-  const DetailedSection({super.key});
+  const DetailedSection({super.key, this.recipe});
+  final Recipe? recipe;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
-      children: const [
-        DetailedInfo(titlefield: 'Tipo de Medicamento', infofield: 'Bote'),
+      children: [
         DetailedInfo(
-            titlefield: 'Intervalo de Tiempo', infofield: 'Cada 8 horas'),
-        DetailedInfo(titlefield: 'Tiempo de Inicio', infofield: '12:00 PM'),
+          titlefield: 'Tipo de Medicamento',
+          infofield: recipe!.recipetype! == 'none'
+              ? 'No especificado'
+              : recipe!.recipetype!,
+        ),
+        DetailedInfo(
+            titlefield: 'Intervalo de Tiempo',
+            infofield:
+                'Cada ${recipe!.interval} horas  |  ${recipe!.interval == 24 ? " Una vez al dia" : " ${(24 / recipe!.interval!).floor()} veces al dia"} '),
+        DetailedInfo(titlefield: 'Tiempo de Inicio', 
+        infofield: '${recipe!.starttime![0]}${recipe!.starttime![1]}:${recipe!.starttime![2]}${recipe!.starttime![3]}'),
       ],
     );
   }

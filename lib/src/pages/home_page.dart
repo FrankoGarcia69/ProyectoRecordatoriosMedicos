@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/recipe.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../constantscolors.dart';
+import '../../global_bloc.dart';
 import 'add_recipe/add_recipe_page.dart';
 import 'resume_recipe/resume_recipe_page.dart';
 
@@ -63,6 +66,7 @@ class TopContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalB globalB = Provider.of<GlobalB>(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -90,15 +94,20 @@ class TopContainer extends StatelessWidget {
         SizedBox(
           height: 2.h,
         ),
-        Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.only(
-            bottom: 1.h,
-          ),
-          child: Text(
-            '0',
-            style: Theme.of(context).textTheme.headline4,
-          ),
+        StreamBuilder<List<Recipe>>(
+          stream: globalB.recipeList$,
+          builder: (context, snapshot) {
+            return Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.only(
+                bottom: 1.h,
+              ),
+              child: Text(
+                !snapshot.hasData ? '0' : snapshot.data!.length.toString(),
+                style: Theme.of(context).textTheme.headline4,
+              ),
+            );
+          },
         ),
       ],
     );
@@ -116,69 +125,155 @@ class BottomContainer extends StatelessWidget {
     //       style: Theme.of(context).textTheme.headline3),
     // );
 
-    return GridView.builder(
-      padding: EdgeInsets.only(top: 1.h),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return RecipeCard();
+    final GlobalB globalB = Provider.of<GlobalB>(context);
+
+    return StreamBuilder(
+      stream: globalB.recipeList$,
+      builder: (context, snapshot) {
+        //si no se guardan los datos
+        if (!snapshot.hasData) {
+          return Container();
+        } else if (snapshot.data!.isEmpty) {
+          return Center(
+            child: Text('No se ha agregado ninguna receta',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headline3),
+          );
+        } else {
+          return GridView.builder(
+            padding: EdgeInsets.only(top: 1.h),
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              return RecipeCard(
+                recipe: snapshot.data![index],
+              );
+            },
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2),
+          );
+        }
       },
-      gridDelegate:
-          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
     );
+    //
   }
 }
 
 class RecipeCard extends StatelessWidget {
-  const RecipeCard({super.key});
+  const RecipeCard({super.key, required this.recipe});
+  final Recipe recipe;
+
+  //funcion que recibe el icono
+  Hero makeIcon(double size) {
+    if (recipe.recipetype == 'Bote') {
+      return Hero(
+        tag: recipe.recipename! + recipe.recipetype!,
+        child: SvgPicture.asset(
+          'assets/icons/bottle.svg',
+          height: 7.h,
+          color: cPrimaryColor,
+        ),
+      );
+    } else if (recipe.recipetype == 'Capsulas') {
+      return Hero(
+        tag: recipe.recipename! + recipe.recipetype!,
+        child: SvgPicture.asset(
+          'assets/icons/pill.svg',
+          height: 7.h,
+          color: cPrimaryColor,
+        ),
+      );
+    } else if (recipe.recipetype == 'Jeringa') {
+      return Hero(
+        tag: recipe.recipename! + recipe.recipetype!,
+        child: SvgPicture.asset(
+          'assets/icons/syringe.svg',
+          height: 7.h,
+          color: cPrimaryColor,
+        ),
+      );
+    } else if (recipe.recipetype == 'Tabletas') {
+      return Hero(
+        tag: recipe.recipename! + recipe.recipetype!,
+        child: SvgPicture.asset(
+          'assets/icons/pill2.svg',
+          height: 7.h,
+          color: cPrimaryColor,
+        ),
+      );
+    }
+    //en caso de no haber recipetype
+    return Hero(
+      tag: recipe.recipename! + recipe.recipetype!,
+      child: Icon(Icons.error, size: size, color: cSecondaryColor),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-          highlightColor: Colors.white,
-          splashColor: Color.fromARGB(137, 161, 157, 157),
-          onTap: () {
-            //animacion despues
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ResumeRecipePage()));
-          },
-          child: Container(
-            padding:
-                EdgeInsets.only(left: 2.w, right: 1.w, top: 1.h, bottom: 1.h),
-            margin: EdgeInsets.all(1.h),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2.h),
-              color: Colors.white,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Spacer(),
-                SvgPicture.asset(
-                  'assets/icons/bottle.svg',
-                  height: 7.h,
-                  color: cPrimaryColor,
-                ),
-                const Spacer(),
-                Text(
-                  'B12',
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.fade,
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                SizedBox(
-                  height: 0.3.h,
-                ),
-                //tag animation
-                Text(
-                  'Cada 8 horas',
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.fade,
-                  style: Theme.of(context).textTheme.caption,
-                ),
-                //Condicion para intervalo de tiempo
-              ],
-            ),
+      highlightColor: Colors.white,
+      splashColor: Color.fromARGB(137, 161, 157, 157),
+      onTap: () {
+        Navigator.of(context).push(
+          PageRouteBuilder<void>(
+            pageBuilder: (BuildContext context, Animation<double> animation,
+                Animation<double> secondaryAnimation) {
+              return AnimatedBuilder(
+                animation: animation,
+                builder: (context, Widget? child) {
+                  return Opacity(
+                    opacity: animation.value,
+                    child: ResumeRecipePage(recipe),
+                  );
+                },
+              );
+            },
+            transitionDuration: const Duration(milliseconds: 500),
           ),
         );
+      },
+      child: Container(
+        padding: EdgeInsets.only(left: 2.w, right: 1.w, top: 1.h, bottom: 1.h),
+        margin: EdgeInsets.all(1.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(2.h),
+          color: Colors.white,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Spacer(),
+            //llamado de la funcion que coloca el icono
+
+            //Aqui se solucionara el error de los inconos
+
+            makeIcon(7.h),
+            const Spacer(),
+            Hero(tag: recipe.recipename!,
+              child: Text(
+                recipe.recipename!,
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.fade,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ),
+            SizedBox(
+              height: 0.3.h,
+            ),
+            //tag animation
+            Text(
+              recipe.interval == 1
+                  ? 'Cada ${recipe.interval} horas'
+                  : 'Cada ${recipe.interval} horas',
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.fade,
+              style: Theme.of(context).textTheme.caption,
+            ),
+            //Condicion para intervalo de tiempo
+          ],
+        ),
+      ),
+    );
   }
 }

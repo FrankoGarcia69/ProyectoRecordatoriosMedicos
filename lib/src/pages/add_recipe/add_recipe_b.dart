@@ -20,7 +20,7 @@ class AddRecipeB {
   BehaviorSubject<AddError>? get errorState$ => _errorState$;
 
   AddRecipeB() {
-    _selectRecipeType$ = BehaviorSubject<RecipeType>.seeded(RecipeType.none);
+    _selectRecipeType$ = BehaviorSubject<RecipeType>.seeded(RecipeType.None);
 
     _selectedTimeDay$ = BehaviorSubject<String>.seeded('none');
 
@@ -50,7 +50,7 @@ class AddRecipeB {
   void updateSelectedRecipe(RecipeType type) {
     RecipeType _tempType = _selectRecipeType$!.value;
     if (type == _tempType) {
-      _selectRecipeType$!.add(RecipeType.none);
+      _selectRecipeType$!.add(RecipeType.None);
     } else {
       _selectRecipeType$!.add(type);
     }
