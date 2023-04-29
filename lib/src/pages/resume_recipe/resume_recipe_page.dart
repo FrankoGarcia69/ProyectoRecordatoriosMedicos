@@ -228,7 +228,7 @@ class MainSection extends StatelessWidget {
                 child: Material(
                     color: Colors.transparent,
                     child: MainInfo(
-                        titlefield: recipe!.recipename!, infofield: 'B12'))),
+                        titlefield: 'Nombre de Medicamento', infofield: recipe!.recipename!))),
             MainInfo(
                 titlefield: 'Dosis',
                 infofield: recipe!.dose == 0
