@@ -33,7 +33,7 @@ class GlobalB {
           }
         }
 
-        sharedUser.setStringList('Recipe', recipeJsonList);
+        sharedUser.setStringList('recipes', recipeJsonList);
         _recipeList$!.add(blocList);
   }
 
