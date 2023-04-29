@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/recipe.dart';
@@ -13,12 +14,17 @@ class GlobalB {
   }
 
   Future removeRecipe(Recipe tobeRemoved) async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     SharedPreferences sharedUser = await SharedPreferences.getInstance();
     List<String> recipeJsonList = [];
 
     var blocList = _recipeList$!.value;
     blocList
         .removeWhere((recipe) => recipe.recipename == tobeRemoved.recipename);
+
+        for(int i = 0; i<(24 / tobeRemoved.interval!).floor(); i++){
+          flutterLocalNotificationsPlugin.cancel(int.parse(tobeRemoved.notificationid![i]));
+        }
 
         if(blocList.isNotEmpty){
           for(var blockRecipe in blocList){
