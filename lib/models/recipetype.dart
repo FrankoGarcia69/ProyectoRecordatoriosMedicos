@@ -1,7 +1,1 @@
-enum RecipeType {
-  Bote,
-  Capsulas,
-  Jeringa,
-  Tabletas,
-  None
-}
+enum RecipeType { bote, capsulas, jeringa, tabletas, none }

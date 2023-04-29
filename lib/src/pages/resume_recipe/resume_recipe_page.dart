@@ -168,7 +168,7 @@ class MainSection extends StatelessWidget {
   final Recipe? recipe;
 
   Hero makeIcon(double size) {
-    if (recipe!.recipetype == 'Bote') {
+    if (recipe!.recipetype == 'bote') {
       return Hero(
         tag: recipe!.recipename! + recipe!.recipetype!,
         child: SvgPicture.asset(
@@ -177,7 +177,7 @@ class MainSection extends StatelessWidget {
           color: cPrimaryColor,
         ),
       );
-    } else if (recipe!.recipetype == 'Capsulas') {
+    } else if (recipe!.recipetype == 'capsulas') {
       return Hero(
         tag: recipe!.recipename! + recipe!.recipetype!,
         child: SvgPicture.asset(
@@ -186,7 +186,7 @@ class MainSection extends StatelessWidget {
           color: cPrimaryColor,
         ),
       );
-    } else if (recipe!.recipetype == 'Jeringa') {
+    } else if (recipe!.recipetype == 'jeringa') {
       return Hero(
         tag: recipe!.recipename! + recipe!.recipetype!,
         child: SvgPicture.asset(
@@ -195,7 +195,7 @@ class MainSection extends StatelessWidget {
           color: cPrimaryColor,
         ),
       );
-    } else if (recipe!.recipetype == 'Tabletas') {
+    } else if (recipe!.recipetype == 'tabletas') {
       return Hero(
         tag: recipe!.recipename! + recipe!.recipetype!,
         child: SvgPicture.asset(

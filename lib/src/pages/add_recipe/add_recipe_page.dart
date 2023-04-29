@@ -107,33 +107,33 @@ class _AddRecipePageState extends State<AddRecipePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           RecipeTypeColumn(
-                              name: 'Capsulas',
+                              name: 'capsulas',
                               iconValue: 'assets/icons/pill.svg',
-                              isSelected: snapshot.data == RecipeType.Capsulas
+                              isSelected: snapshot.data == RecipeType.capsulas
                                   ? true
                                   : false,
-                              recipeType: RecipeType.Capsulas),
+                              recipeType: RecipeType.capsulas),
                           RecipeTypeColumn(
-                              name: 'Jeringa',
+                              name: 'jeringa',
                               iconValue: 'assets/icons/syringe.svg',
-                              isSelected: snapshot.data == RecipeType.Jeringa
+                              isSelected: snapshot.data == RecipeType.jeringa
                                   ? true
                                   : false,
-                              recipeType: RecipeType.Jeringa),
+                              recipeType: RecipeType.jeringa),
                           RecipeTypeColumn(
-                              name: 'Tabletas',
+                              name: 'tabletas',
                               iconValue: 'assets/icons/pill2.svg',
-                              isSelected: snapshot.data == RecipeType.Tabletas
+                              isSelected: snapshot.data == RecipeType.tabletas
                                   ? true
                                   : false,
-                              recipeType: RecipeType.Tabletas),
+                              recipeType: RecipeType.tabletas),
                           RecipeTypeColumn(
-                              name: 'Bote',
+                              name: 'bote',
                               iconValue: 'assets/icons/bottle.svg',
-                              isSelected: snapshot.data == RecipeType.Bote
+                              isSelected: snapshot.data == RecipeType.bote
                                   ? true
                                   : false,
-                              recipeType: RecipeType.Bote),
+                              recipeType: RecipeType.bote),
                         ],
                       );
                     },
@@ -305,6 +305,9 @@ class _SelectTimeState extends State<SelectTime> {
   bool _clicked = false;
 
   Future<TimeOfDay> _selectTime() async {
+    //aqui
+    final AddRecipeB addRecipeB =
+        Provider.of<AddRecipeB>(context, listen: false);
     final TimeOfDay? picked =
         await showTimePicker(context: context, initialTime: _time);
 
@@ -312,6 +315,9 @@ class _SelectTimeState extends State<SelectTime> {
       setState(() {
         _time = picked;
         _clicked = true;
+
+        addRecipeB.updateTime(convertTime(_time.hour.toString()) +
+            convertTime(_time.minute.toString()));
       });
       //provider updatetime
     }
