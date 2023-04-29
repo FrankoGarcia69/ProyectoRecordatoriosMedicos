@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/global_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../constantscolors.dart';
@@ -16,6 +18,7 @@ class ResumeRecipePage extends StatefulWidget {
 class _ResumeRecipePageState extends State<ResumeRecipePage> {
   @override
   Widget build(BuildContext context) {
+    final GlobalB _globalB = Provider.of<GlobalB>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resumen de Receta'),
@@ -37,7 +40,7 @@ class _ResumeRecipePageState extends State<ResumeRecipePage> {
                 ),
                 onPressed: () {
                   //falta una accion
-                  AlertBox(context);
+                  AlertBox(context, _globalB);
                 },
                 child: Text(
                   'Eliminar',
@@ -56,7 +59,7 @@ class _ResumeRecipePageState extends State<ResumeRecipePage> {
     );
   }
 
-  AlertBox(BuildContext context) {
+  AlertBox(BuildContext context, GlobalB _globalB) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -79,6 +82,8 @@ class _ResumeRecipePageState extends State<ResumeRecipePage> {
               TextButton(
                 onPressed: () {
                   //se hace despues la accion de eliminar
+                  _globalB.removeRecipe(widget.recipe);
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
                 },
                 child: Text(
                   'OK',
@@ -255,8 +260,10 @@ class DetailedSection extends StatelessWidget {
             titlefield: 'Intervalo de Tiempo',
             infofield:
                 'Cada ${recipe!.interval} horas  |  ${recipe!.interval == 24 ? " Una vez al dia" : " ${(24 / recipe!.interval!).floor()} veces al dia"} '),
-        DetailedInfo(titlefield: 'Tiempo de Inicio', 
-        infofield: '${recipe!.starttime![0]}${recipe!.starttime![1]}:${recipe!.starttime![2]}${recipe!.starttime![3]}'),
+        DetailedInfo(
+            titlefield: 'Tiempo de Inicio',
+            infofield:
+                '${recipe!.starttime![0]}${recipe!.starttime![1]}:${recipe!.starttime![2]}${recipe!.starttime![3]}'),
       ],
     );
   }

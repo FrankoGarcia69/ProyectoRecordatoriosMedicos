@@ -12,6 +12,25 @@ class GlobalB {
     createRecipeList();
   }
 
+  Future removeRecipe(Recipe tobeRemoved) async {
+    SharedPreferences sharedUser = await SharedPreferences.getInstance();
+    List<String> recipeJsonList = [];
+
+    var blocList = _recipeList$!.value;
+    blocList
+        .removeWhere((recipe) => recipe.recipename == tobeRemoved.recipename);
+
+        if(blocList.isNotEmpty){
+          for(var blockRecipe in blocList){
+            String recipeJson = jsonEncode(blockRecipe.toJson());
+            recipeJsonList.add(recipeJson);
+          }
+        }
+
+        sharedUser.setStringList('Recipe', recipeJsonList);
+        _recipeList$!.add(blocList);
+  }
+
   Future updateRecipeList(Recipe newRecipe) async {
     var blocList = _recipeList$!.value;
     blocList.add(newRecipe);
