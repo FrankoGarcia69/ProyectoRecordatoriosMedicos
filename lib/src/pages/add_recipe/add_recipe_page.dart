@@ -15,6 +15,7 @@ import '../../../global_bloc.dart';
 
 import '../../../models/recipe.dart';
 import '../../../models/recipetype.dart';
+import '../../../services/notification_services.dart';
 import '../success_screen/success_screen.dart';
 
 class AddRecipePage extends StatefulWidget {
@@ -300,59 +301,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
     return ids;
   }
 
-  initializeNotifications() async {
-    var initializationSettingsAndroid =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettingsIOS = const DarwinInitializationSettings();
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  Future onSelectNotification(String? payload) async {
-    if (payload != null) {
-      debugPrint('Notification payload: $payload');
-    }
-    await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HomePage()));
-  }
-
-  Future<void> scheduleNotification(Recipe recipe) async {
-    var hour = int.parse(recipe.starttime![0] + recipe.starttime![1]);
-    var ogValue = hour;
-    var minute = int.parse(recipe.starttime![2] + recipe.starttime![3]);
-    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-        'repeatDailyAtTime channel id', 'repeatDailyAtTime channel name',
-        importance: Importance.max,
-        ledColor: cOtherColor,
-        ledOffMs: 1000,
-        ledOnMs: 1000,
-        enableLights: true);
-    var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
-
-    var platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        iOS: iOSPlatformChannelSpecifics);
-
-    for (int i = 0; i < (24 / recipe.interval!).floor(); i++) {
-      if (hour + (recipe.interval! * i) > 23) {
-        hour = hour + (recipe.interval! * i) - 24;
-      } else {
-        hour = hour + (recipe.interval! * i);
-      }
-      
-      await flutterLocalNotificationsPlugin.showDailyAtTime(
-          int.parse(recipe.notificationid![i]),
-          'Recordatorio ${recipe.recipename}',
-          recipe.recipetype.toString() != RecipeType.none.toString()
-              ? 'Es tiempo de tomar tu ${recipe.recipetype!.toLowerCase()}, de acuerdo a tu planificacion'
-              : 'Es tiempo de tomar tu medicina, de acuerdo a tu planificacion',
-          Time(hour, minute, 0),
-          platformChannelSpecifics);
-      hour = ogValue;
-    }
-  }
+  
 }
 
 class SelectTime extends StatefulWidget {

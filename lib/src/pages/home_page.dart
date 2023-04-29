@@ -6,6 +6,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../constantscolors.dart';
 import '../../global_bloc.dart';
+import '../../services/notification_services.dart';
 import 'add_recipe/add_recipe_page.dart';
 import 'resume_recipe/resume_recipe_page.dart';
 
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(builder: (context) => const AddRecipePage()),
           );
+         
         },
         child: SizedBox(
           width: 18.w,
@@ -119,12 +121,6 @@ class BottomContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Center(
-    //   child: Text('No se ha agregado ninguna receta',
-    //       textAlign: TextAlign.center,
-    //       style: Theme.of(context).textTheme.headline3),
-    // );
-
     final GlobalB globalB = Provider.of<GlobalB>(context);
 
     return StreamBuilder(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/src/pages/add_recipe/add_recipe_b.dart';
+import 'package:flutter_application_1/services/notification_services.dart';
 import 'package:flutter_application_1/src/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +7,13 @@ import 'package:sizer/sizer.dart';
 import 'constantscolors.dart';
 import 'global_bloc.dart';
 
-void main() => runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeNotifications();
+  
+  runApp(const MyApp());
+  
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
